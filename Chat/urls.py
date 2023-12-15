@@ -6,6 +6,7 @@ from .views import (
     Signup,
     Dashboard,
     ServerView,
+    RoomView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("dashboard/", Dashboard.as_view(), name="dashboard"),
     path("server/<int:pk>/", ServerView.as_view(), name="server"),
+    path("server/<pk>/<str:room_name>/", RoomView.as_view(), name="room"),
 ]

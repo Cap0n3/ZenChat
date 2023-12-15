@@ -2,21 +2,6 @@
 {% block content %}
     <div class="container mt-3 p-5">
         <div class="row mb-5">
-            <h2>All Available Servers</h2>
-            {% if servers %}
-                <p>Click on a server to join it</p>
-            {% else %}
-                <p>There are no servers yet</p>
-            {% endif %}
-            <ul class="list-group">
-                {% for server in servers %}
-                    <li class="list-group-item">
-                        <a href="{% url 'server' server.id %}" class="btn btn-primary stretched-link">{{ server.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="row mb-5">
             <h2>Joined servers</h2>
             {% if joined_servers %}
                 <p>Here are the servers you have joined</p>
@@ -46,5 +31,20 @@
                 <input type="submit" value="Submit">
             </form>
         </div>
+    </div>
+    <div class="row mb-5">
+        <h2>All Available Servers</h2>
+        {% if servers %}
+            <p>Click on a server to join it</p>
+        {% else %}
+            <p>There are no servers yet</p>
+        {% endif %}
+        <ul class="list-group">
+            {% for server in servers %}
+                <li class="list-group-item">
+                    <a href="{% url 'server' server.id %}" class="btn btn-primary stretched-link">{{ server.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock content %}

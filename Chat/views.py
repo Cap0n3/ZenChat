@@ -130,18 +130,18 @@ class ServerView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         server = ChatServer.objects.get(id=self.kwargs["pk"])
         current_user = CustomUser.objects.get(pk=request.user.pk)
-        user_role = Membership.objects.get(user=current_user, server=server).role
         chat_rooms = Room.objects.filter(chat_server=server)
         
         if current_user not in server.members.all():
-            logger.info(f"User {current_user.username} is not a member of {server.name} but checked the server page")
+            logger.info(f"User {current_user.username} is previewing {server.name} but is not a member")
             context = {
                 "server": server,
                 "rooms": chat_rooms,
-                "error": "You are not a member of this server",
+                "warning": "You are in preview mode. Join the server to access all features.",
             }
         else:
-            logger.info(f"User {current_user.username} is a member of {server.name}. Role: {user_role}")
+            user_role = Membership.objects.get(user=current_user, server=server).role
+            logger.info(f"User {current_user.username} is a member of {server.name}. Role: {user_role}")    
             context = {
                 "server": server,
                 "form": CreateRoomForm(user_role=user_role),
@@ -160,7 +160,7 @@ class ServerView(LoginRequiredMixin, View):
         if form.is_valid():
             logger.debug(f"Form is valid: {form.cleaned_data}")
             form.instance.chat_server = server
-            #form.save()
+            form.save()
             form = CreateRoomForm(user_role=user_role)
         else:
             logger.warning(f"Form is invalid: {form.errors}")
@@ -170,5 +170,23 @@ class ServerView(LoginRequiredMixin, View):
             "rooms": Room.objects.filter(chat_server=server),
             "form": form,
         }
+
+        return render(request, self.template_name, context)
+    
+class RoomView(View):
+    """
+    Get the room name from the URL and return the room object. If the room does not exist, it is created.
+    """
+
+    template_name = "chat/room.html"
+
+    def get(self, request, *args, **kwargs):
+        server_instance = ChatServer.objects.get(id=self.kwargs["pk"])
+        room_name = self.kwargs["room_name"]
+        chat_room = Room.objects.get(
+            chat_server=server_instance, name=room_name
+        )
+
+        context = {"room": chat_room}
 
         return render(request, self.template_name, context)

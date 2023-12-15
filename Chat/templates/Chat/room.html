@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container mt-3 p-5">
+        <!-- Go back to server with right id -->
+        <a href="{% url 'server' room.chat_server.id %}">Back to server "{{ room.chat_server.name }}"</a>
+        <h2>Welcome to room "{{ room.name }}"</h2>
+        <div class="row">
+            <div class="col-12 col-md-8">
+                <div class="mb-2">
+                    <label for="chatLog">Room: #{{ room.name }}</label>
+                    <textarea class="form-control" id="chatLog" readonly></textarea>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="chatMessageInput" placeholder="Enter your chat message">
+                    <div class="input-group-append">
+                        <button class="btn btn-success" id="chatMessageSend" type="button">Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <label for="onlineUsers">Online users</label>
+                <select multiple class="form-control" id="onlineUsersSelector">
+                </select>
+            </div>
+        </div>
+        {{ room.name|json_script:"roomName" }}
+    </div>
+{% endblock content %}

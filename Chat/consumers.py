@@ -47,7 +47,7 @@ class ChatConsumer(WebsocketConsumer):
             f"User {self.user.username} successfully joined room {self.room_name}"
         )
 
-        # Send the user list ot the newly joined user
+        # Send the user list to the newly joined user
         self.send(
             json.dumps(
                 {

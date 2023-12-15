@@ -141,6 +141,8 @@ CHANNEL_LAYERS = {
     }
 }
 
+LOGIN_URL = "login"
+
 # === Logging configuration === #
 class HTTPDebugFilter(logging.Filter):
     def filter(self, record):

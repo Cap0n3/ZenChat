@@ -1,6 +1,7 @@
 from django.views.generic.edit import FormView
 from django.views.generic import ListView
 from django.views import View
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
@@ -26,12 +27,12 @@ class Dashboard(LoginRequiredMixin, ListView):
     model = CustomUser
     # context_object_name = "servers"
     form_class = CreateServerForm
+    redirect_field_name = "login"
 
-    # Redirect to home page if user is not logged in
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return HttpResponseRedirect(reverse_lazy("home"))
-        return super().dispatch(request, *args, **kwargs)
+    def handle_no_permission(self):
+        messages.error(self.request, "You must be logged in to access your dashboard. Please login or signup.")
+        print(messages.error)
+        return super().handle_no_permission()
 
     def instanciate_form(self):
         """
@@ -112,8 +113,9 @@ class Login(FormView):
             return HttpResponseRedirect(self.success_url)
         else:
             # Return form with error
-            form.add_error(None, "Failed to login")
-            return super().form_invalid(form)
+            print("Invalid credentials. Please try again.")
+            form.add_error(None, "Invalid credentials. Please try again.")
+            return self.form_invalid(form)
 
 
 def logout_view(request):
@@ -126,6 +128,11 @@ def logout_view(request):
 
 class ServerView(LoginRequiredMixin, View):
     template_name = "Chat/chat_server.html"
+    redirect_field_name = "login"
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You must be logged in to access a server. Please login or signup.")
+        return super().handle_no_permission()
     
     def get(self, request, *args, **kwargs):
         server = ChatServer.objects.get(id=self.kwargs["pk"])
@@ -173,12 +180,17 @@ class ServerView(LoginRequiredMixin, View):
 
         return render(request, self.template_name, context)
     
-class RoomView(View):
+class RoomView(LoginRequiredMixin, View):
     """
     Get the room name from the URL and return the room object. If the room does not exist, it is created.
     """
 
     template_name = "chat/room.html"
+    redirect_field_name = "login"
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You must be logged in to access a room. Please login or signup.")
+        return super().handle_no_permission()
 
     def get(self, request, *args, **kwargs):
         server_instance = ChatServer.objects.get(id=self.kwargs["pk"])

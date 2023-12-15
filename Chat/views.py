@@ -6,12 +6,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
-from .models import CustomUser, ChatServer, Membership
-from .forms import LoginForm, SignupForm, CreateServerForm
+from .models import CustomUser, ChatServer, Membership, Room
+from .forms import LoginForm, SignupForm, CreateServerForm, CreateRoomForm
 from ZenChat.settings import logger
 
-
+# ================== #
 # === Core Views === #
+# ================== #
+
 class Home(View):
     template_name = "Chat/home.html"
 
@@ -118,14 +120,55 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse_lazy("home"))
 
+# ================== #
+# === Chat Views === #
+# ================== #
 
-# === Server Views === #
 class ServerView(LoginRequiredMixin, View):
+    template_name = "Chat/chat_server.html"
+    
     def get(self, request, *args, **kwargs):
         server = ChatServer.objects.get(id=self.kwargs["pk"])
         current_user = CustomUser.objects.get(pk=request.user.pk)
+        user_role = Membership.objects.get(user=current_user, server=server).role
+        chat_rooms = Room.objects.filter(chat_server=server)
         
         if current_user not in server.members.all():
-            return HttpResponse("You are not a member of this server")
+            logger.info(f"User {current_user.username} is not a member of {server.name} but checked the server page")
+            context = {
+                "server": server,
+                "rooms": chat_rooms,
+                "error": "You are not a member of this server",
+            }
         else:
-            return HttpResponse(f"Server: {server.name}")
+            logger.info(f"User {current_user.username} is a member of {server.name}. Role: {user_role}")
+            context = {
+                "server": server,
+                "form": CreateRoomForm(user_role=user_role),
+                "rooms": chat_rooms,
+            }
+
+        return render(request, self.template_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        server = ChatServer.objects.get(id=self.kwargs["pk"])
+        current_user = CustomUser.objects.get(pk=request.user.pk)
+        user_role = Membership.objects.get(user=current_user, server=server).role
+
+        form = CreateRoomForm(request.POST, user_role=user_role)
+
+        if form.is_valid():
+            logger.debug(f"Form is valid: {form.cleaned_data}")
+            form.instance.chat_server = server
+            #form.save()
+            form = CreateRoomForm(user_role=user_role)
+        else:
+            logger.warning(f"Form is invalid: {form.errors}")
+
+        context = {
+            "server": server,
+            "rooms": Room.objects.filter(chat_server=server),
+            "form": form,
+        }
+
+        return render(request, self.template_name, context)

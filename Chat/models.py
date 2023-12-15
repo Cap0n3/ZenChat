@@ -53,6 +53,13 @@ class ChatServer(models.Model):
     # messages = models.ManyToManyField(Message, related_name="messages")
     date_of_creation = models.DateTimeField(default=timezone.now)
 
+    def save(self, *args, **kwargs):
+        """
+        When server is created the owner is automatically added as an admin member
+        """
+        super(ChatServer, self).save(*args, **kwargs)
+        Membership.objects.create(user=self.owner, server=self, role="admin")
+    
     def __str__(self):
         return self.name
 
@@ -68,6 +75,10 @@ class Membership(models.Model):
         ("moderator", "Moderator"),
     ]
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="member", blank=False)
+
+    # Raise an error if the user is already a member of the server (avoid double membership)
+    class Meta:
+        unique_together = ["user", "server"]
 
     def __str__(self):
         return (

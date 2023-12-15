@@ -22,8 +22,8 @@
                 <p>Here are the servers you have joined</p>
                 <ul class="list-group">
                     {% for joined_server in joined_servers %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            {{ joined_server.server }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">   
+                            <a href="{% url 'server' joined_server.server.id %}" class="btn btn-primary stretched-link">{{ joined_server.server.name }}</a>
                             {% if joined_server.server.owner.id == user.id %}
                                 <span class="badge bg-primary rounded-pill">owner</span>
                             {% elif joined_server.role == "admin" %}

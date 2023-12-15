@@ -2,7 +2,7 @@ from .models import CustomUser
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
-from .models import CustomUser, ChatServer
+from .models import CustomUser, ChatServer, Room, Membership
 
 
 # ========================= #
@@ -105,9 +105,9 @@ class SignupForm(forms.ModelForm):
         return user
 
 
-# ========================= #
-# ====== Server form ====== #
-# ========================= #
+# ======================== #
+# ====== Chat forms ====== #
+# ======================== #
 
 
 class CreateServerForm(forms.ModelForm):
@@ -123,7 +123,7 @@ class CreateServerForm(forms.ModelForm):
 
     class Meta:
         model = ChatServer
-        fields = ["name", "members"]
+        fields = ["name", "description", "members"]
         labels = {
             "name": "Server Name",
             "members": "Invite registered users",
@@ -135,6 +135,13 @@ class CreateServerForm(forms.ModelForm):
                     "placeholder": "Enter server name",
                 }
             ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Enter server description",
+                    "rows": 3,
+                }
+            ),
             "members": forms.SelectMultiple(
                 attrs={
                     "class": "form-control selectpicker",
@@ -143,4 +150,23 @@ class CreateServerForm(forms.ModelForm):
                 choices=CustomUser.objects.all(),
             ),
             "isPublic": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+class CreateRoomForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        # Extract user_role from kwargs and pop it to prevent it from being passed to the parent class
+        user_role = kwargs.pop('user_role', None)
+        super(CreateRoomForm, self).__init__(*args, **kwargs)
+        
+        if user_role != "admin":
+            # If the user is not an admin, remove the admins_only field
+            self.fields.pop("admins_only")
+
+    class Meta:
+        model = Room
+        fields = ["name", "description", "admins_only"]        
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter room name'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Enter room description', 'rows': 3}),
+            'admins_only': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }

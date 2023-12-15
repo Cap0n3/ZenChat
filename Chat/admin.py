@@ -45,7 +45,7 @@ class ChatServerAdmin(admin.ModelAdmin):
 
 
 class MembershipAdmin(admin.ModelAdmin):
-    list_display = ["user", "server", "role"]
+    list_display = ["server", "user", "role"]
     ordering = ["server", "user"]
 
 

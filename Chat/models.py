@@ -67,7 +67,7 @@ class Membership(models.Model):
         ("admin", "Admin"),
         ("moderator", "Moderator"),
     ]
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="member", blank=False)
 
     def __str__(self):
         return (
@@ -76,7 +76,22 @@ class Membership(models.Model):
 
 
 class Room(models.Model):
-    server = models.ForeignKey(ChatServer, on_delete=models.CASCADE)
+    chat_server = models.ForeignKey(ChatServer, on_delete=models.CASCADE)
     name = models.CharField(max_length=40, unique=True)
+    description = models.CharField(max_length=400)
     admins_only = models.BooleanField(default=False)
     online = models.ManyToManyField(CustomUser, related_name="online", blank=True)
+
+    def get_online_count(self):
+        return self.online.count()
+
+    def join(self, user):
+        self.online.add(user)
+        self.save()
+
+    def leave(self, user):
+        self.online.remove(user)
+        self.save()
+
+    def __str__(self):
+        return f"{self.name} ({self.get_online_count()}"

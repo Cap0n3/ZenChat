@@ -41,6 +41,10 @@ class Dashboard(LoginRequiredMixin, ListView):
         # Get the servers of which the user is a member
         current_user = CustomUser.objects.get(pk=self.request.user.pk)
         joined_servers = Membership.objects.filter(user=current_user)
+        user_role = joined_servers.values_list("role", flat=True)
+
+        for server in joined_servers:
+            logger.debug(f"Server: {server.server.name}, Role: {server.role}")
 
         return {
             "servers": ChatServer.objects.all(),

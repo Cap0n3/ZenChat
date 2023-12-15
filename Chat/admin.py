@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import UserCreationForm, UserChangeForm, AdminChatServerForm
-from .models import CustomUser, ChatServer, Membership
+from .models import CustomUser, ChatServer, Membership, Room
 
 
 class CustomUserAdmin(UserAdmin):
@@ -52,3 +52,4 @@ class MembershipAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(ChatServer, ChatServerAdmin)
 admin.site.register(Membership, MembershipAdmin)
+admin.site.register(Room)

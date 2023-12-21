@@ -7,6 +7,7 @@ from django.utils import timezone
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=40, unique=True)
     email = models.EmailField(max_length=254, unique=True)
+    #avatar = models.ImageField(upload_to="avatars/", default="avatars/default.webp", blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)

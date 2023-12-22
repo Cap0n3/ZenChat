@@ -106,7 +106,7 @@ class Room(models.Model):
 
 class Message(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
     content = models.CharField(max_length=512)
     timestamp = models.DateTimeField(auto_now_add=True)
 

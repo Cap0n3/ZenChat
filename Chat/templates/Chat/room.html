@@ -11,8 +11,13 @@
                     <textarea class="form-control" id="chatLog" readonly></textarea>
                 </div> {% endcomment %}
                 <!-- NEW CHAT LOG -->
+
                 <div id="chatFeed">
-                    <ol id="scroller-inner"></ol>
+                    <ol id="scroller-inner">
+                        {% for message in room.messages.all %}
+                            <li>{{ message.user.username }}: {{ message.content }}</li>
+                        {% endfor %}
+                    </ol>
                 </div>
                 <div class="input-group mt-4">
                     <input type="text" class="form-control" id="chatMessageInput" placeholder="Enter your chat message">

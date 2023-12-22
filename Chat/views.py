@@ -199,6 +199,8 @@ class RoomView(LoginRequiredMixin, View):
             chat_server=server_instance, name=room_name
         )
 
-        context = {"room": chat_room}
+        context = {
+            "room": chat_room
+        }
 
         return render(request, self.template_name, context)

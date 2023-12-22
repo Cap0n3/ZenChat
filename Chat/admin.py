@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .forms import UserCreationForm, UserChangeForm, AdminChatServerForm
-from .models import CustomUser, ChatServer, Membership, Room
+from .models import CustomUser, ChatServer, Membership, Room, Message
 
 
 class CustomUserAdmin(UserAdmin):
@@ -49,8 +49,16 @@ class MembershipAdmin(admin.ModelAdmin):
     list_display = ["server", "user", "role"]
     ordering = ["server", "user"]
 
+class MessageAdmin(admin.ModelAdmin):
+    # Get room server
+    def server(self, obj):
+        return obj.room.chat_server
+    
+    list_display = ["room", "server", "user", "timestamp"]
+    ordering = ["room", "timestamp"]
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(ChatServer, ChatServerAdmin)
 admin.site.register(Membership, MembershipAdmin)
 admin.site.register(Room)
+admin.site.register(Message, MessageAdmin)

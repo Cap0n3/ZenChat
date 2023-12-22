@@ -87,13 +87,17 @@ class LoginForm(forms.Form):
 class SignupForm(forms.ModelForm):
     # Add password confirmation field
     password2 = forms.CharField(
-        label="Password confirmation", widget=forms.PasswordInput
+        label="Password confirmation", widget=forms.PasswordInput(attrs={"class": "form-control"})
     )
 
     class Meta:
         model = CustomUser
         fields = ["email", "username", "password", "password2"]
-        widgets = {"password": forms.PasswordInput()}  # Password should be hidden
+        widgets = {
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "password": forms.PasswordInput(attrs={"class": "form-control"}),
+        }  # Password should be hidden
 
     # Check that the two password entries match
     def clean_password2(self):

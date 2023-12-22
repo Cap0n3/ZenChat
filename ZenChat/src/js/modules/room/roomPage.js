@@ -76,7 +76,7 @@ export function roomPage() {
                         `
                         <li>
                             <div class="message-container">
-                                <img class="user-avatar" src="https://picsum.photos/300/300" alt="avatar">
+                                <img class="user-avatar" src="${data.avatar}" alt="avatar">
                                 <h3 class="chat-user">${data.user}</h3>
                                 <div class="message-content">${data.message}</div>
                             </div>

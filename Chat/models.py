@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from .managers import CustomUserManager
 from django.utils import timezone
+from ZenChat.settings import logger
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -54,13 +55,6 @@ class ChatServer(models.Model):
     # messages = models.ManyToManyField(Message, related_name="messages")
     date_of_creation = models.DateTimeField(default=timezone.now)
 
-    def save(self, *args, **kwargs):
-        """
-        When server is created the owner is automatically added as an admin member
-        """
-        super(ChatServer, self).save(*args, **kwargs)
-        Membership.objects.create(user=self.owner, server=self, role="admin")
-    
     def __str__(self):
         return self.name
 
@@ -80,6 +74,7 @@ class Membership(models.Model):
     # Raise an error if the user is already a member of the server (avoid double membership)
     class Meta:
         unique_together = ["user", "server"]
+
 
     def __str__(self):
         return (
@@ -108,6 +103,7 @@ class Room(models.Model):
     def __str__(self):
         return f"{self.name} ({self.get_online_count()}"
     
+
 class Message(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     room = models.ForeignKey(Room, on_delete=models.CASCADE)

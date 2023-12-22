@@ -3,8 +3,7 @@ from django.conf import settings
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-
-from .models import Room, Message
+from .models import CustomUser, Room, Message
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -14,6 +13,7 @@ class ChatConsumer(WebsocketConsumer):
         self.room_group_name = None
         self.room = None
         self.user = None
+        self.avatar = None
         self.user_inbox = None  # For private messaging
 
         logger.debug("[***] ChatConsumer created [***]")
@@ -23,6 +23,7 @@ class ChatConsumer(WebsocketConsumer):
         self.room_group_name = f"chat_{self.room_name}"
         self.room = Room.objects.get(name=self.room_name)
         self.user = self.scope["user"]
+        self.avatar = CustomUser.objects.get(username=self.user.username).avatar
         self.user_inbox = f"inbox_{self.user.username}"
 
         logger.debug(f"Received scope: {self.scope}")
@@ -138,6 +139,7 @@ class ChatConsumer(WebsocketConsumer):
                     {
                         "type": "private_message",
                         "user": self.user.username,
+                        "avatar": self.avatar.url,
                         "message": target_msg,
                     },
                 )
@@ -168,6 +170,7 @@ class ChatConsumer(WebsocketConsumer):
             {
                 "type": "chat_message",
                 "user": self.user.username,
+                "avatar": self.avatar.url,
                 "message": message,
             },
         )

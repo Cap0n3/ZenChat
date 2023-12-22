@@ -3,6 +3,7 @@ export function roomPage() {
 
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
 
+    let scrollerInner = document.querySelector("#scroller-inner") // NEW
     let chatLog = document.querySelector("#chatLog");
     let chatMessageInput = document.querySelector("#chatMessageInput");
     let chatMessageSend = document.querySelector("#chatMessageSend");
@@ -68,7 +69,20 @@ export function roomPage() {
 
             switch(data.type) {
                 case "chat_message":
-                    chatLog.value += data.user + ": " + data.message + "\n";
+                    //chatLog.value += data.user + ": " + data.message + "\n";
+                    scrollerInner.insertAdjacentHTML(
+                        "beforeend", 
+                        // "<li><span class='chat-message-user'>" + data.user + "</span>: " + data.message + "</li>"   
+                        `
+                        <li>
+                            <div class="message-container">
+                                <img class="user-avatar" src="${data.avatar}" alt="avatar">
+                                <h3 class="chat-user">${data.user}</h3>
+                                <div class="message-content">${data.message}</div>
+                            </div>
+                        </li>
+                        `    
+                    );
                     break;
                 case "user_list":
                     for (let i = 0; i < data.users.length; i++) {
@@ -76,7 +90,18 @@ export function roomPage() {
                     }
                     break;
                 case "user_join":
-                    chatLog.value += data.user + " joined the room.\n";
+                    //chatLog.value += data.user + " joined the room.\n";
+                    scrollerInner.insertAdjacentHTML(
+                        "beforeend", 
+                        //"<li><span class='chat-joined-user'><i>" + data.user + "</span> joined the room.</i></li>"
+                        `
+                        <li>
+                            <div class="message-container">
+                                <div class="chat-joined-user">--- ${data.user} joined the room ---</div>
+                            </div>
+                        </li>
+                        `
+                    );
                     onlineUsersSelectorAdd(data.user);
                     break;
                 case "user_leave":

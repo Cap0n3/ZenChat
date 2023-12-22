@@ -1,8 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Sign Up</h2>
-        <form method="post">{% csrf_token %}
-            {{ form.as_p }}
-        <button type="submit">Log In</button>
-    </form>
+    {% if request.user.is_authenticated %}
+        <div class="alert alert-warning" role="alert">
+            You are already logged in.
+        </div>
+    {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="row">
+        <div class="col-md-4 px-5">
+            <h2>Sign Up</h2>
+            <p>Sign up for an account today to gain access to members only features.</p>
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ form.non_field_errors | safe }}
+                </div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                {% endfor %}
+                <button type="submit" class="btn btn-primary mt-3">Log In</button>
+            </form>
+        </div>
+    </div>
 {% endblock content %}

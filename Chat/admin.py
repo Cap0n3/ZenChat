@@ -54,7 +54,7 @@ class MessageAdmin(admin.ModelAdmin):
     def server(self, obj):
         return obj.room.chat_server
     
-    list_display = ["room", "server", "user", "timestamp"]
+    list_display = ["room", "server", "user", "formatted_timestamp"]
     ordering = ["room", "timestamp"]
 
 admin.site.register(CustomUser, CustomUserAdmin)

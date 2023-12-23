@@ -4,6 +4,7 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import CustomUser, Room, Message
+from datetime import datetime
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -115,6 +116,7 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
+        timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
 
         if not self.user.is_authenticated:
             logger.warning(
@@ -141,6 +143,7 @@ class ChatConsumer(WebsocketConsumer):
                         "user": self.user.username,
                         "avatar": self.avatar.url,
                         "message": target_msg,
+                        "timestamp": timestamp,
                     },
                 )
             except Exception as e:
@@ -172,6 +175,7 @@ class ChatConsumer(WebsocketConsumer):
                 "user": self.user.username,
                 "avatar": self.avatar.url,
                 "message": message,
+                "timestamp": timestamp,
             },
         )
 

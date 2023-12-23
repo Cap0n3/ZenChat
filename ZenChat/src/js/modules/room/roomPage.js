@@ -1,13 +1,14 @@
+import { scrollDown } from "./chat_utils";
+
 export function roomPage() {
     console.log("Sanity check from roomPage().");
 
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
-
-    let scrollerInner = document.querySelector("#scroller-inner") // NEW
-    let chatLog = document.querySelector("#chatLog");
-    let chatMessageInput = document.querySelector("#chatMessageInput");
-    let chatMessageSend = document.querySelector("#chatMessageSend");
-    let onlineUsersSelector = document.querySelector("#onlineUsersSelector");
+    const scrollerInner = document.querySelector("#scroller-inner") // NEW
+    const chatFeed = document.querySelector("#chatFeed");
+    const chatMessageInput = document.querySelector("#chatMessageInput");
+    const chatMessageSend = document.querySelector("#chatMessageSend");
+    const onlineUsersSelector = document.querySelector("#onlineUsersSelector");
 
     // adds a new option to 'onlineUsersSelector'
     function onlineUsersSelectorAdd(value) {
@@ -69,20 +70,19 @@ export function roomPage() {
 
             switch(data.type) {
                 case "chat_message":
-                    //chatLog.value += data.user + ": " + data.message + "\n";
                     scrollerInner.insertAdjacentHTML(
-                        "beforeend", 
-                        // "<li><span class='chat-message-user'>" + data.user + "</span>: " + data.message + "</li>"   
+                        "beforeend",    
                         `
                         <li>
                             <div class="message-container">
                                 <img class="user-avatar" src="${data.avatar}" alt="avatar">
-                                <h3 class="chat-user">${data.user}</h3>
+                                <h3 class="chat-user">${data.user} <span class="timestamp">${data.timestamp}</span></h3>
                                 <div class="message-content">${data.message}</div>
                             </div>
                         </li>
                         `    
                     );
+                    scrollDown(chatFeed);
                     break;
                 case "user_list":
                     for (let i = 0; i < data.users.length; i++) {
@@ -90,7 +90,6 @@ export function roomPage() {
                     }
                     break;
                 case "user_join":
-                    //chatLog.value += data.user + " joined the room.\n";
                     scrollerInner.insertAdjacentHTML(
                         "beforeend", 
                         //"<li><span class='chat-joined-user'><i>" + data.user + "</span> joined the room.</i></li>"
@@ -103,26 +102,40 @@ export function roomPage() {
                         `
                     );
                     onlineUsersSelectorAdd(data.user);
+                    scrollDown(chatFeed);
                     break;
                 case "user_leave":
-                    chatLog.value += data.user + " left the room.\n";
+                    // chatLog.value += data.user + " left the room.\n";
+                    scrollerInner.insertAdjacentHTML(
+                        "beforeend", 
+                        //"<li><span class='chat-joined-user'><i>" + data.user + "</span> joined the room.</i></li>"
+                        `
+                        <li>
+                            <div class="message-container">
+                                <div class="chat-joined-user">--- ${data.user} left the room ---</div>
+                            </div>
+                        </li>
+                        `
+                    );
                     onlineUsersSelectorRemove(data.user);
+                    scrollDown(chatFeed);
                     break;
                 case "private_message":
-                    chatLog.value += "PM from " + data.user + ": " + data.message + "\n";
+                    // chatLog.value += "PM from " + data.user + ": " + data.message + "\n";
                     break;
                 case "private_message_delivered":
-                    chatLog.value += "PM to " + data.target + ": " + data.message + "\n";
+                    // chatLog.value += "PM to " + data.target + ": " + data.message + "\n";
                     break;
                 default:
                     //console.error("Unknown message type !");
                     console.error("Unknown message type ! \n(data.type = " + data.type + ")");
                     break;
+
             }
         }
 
         // Scroll 'chatLog' to the bottom
-        chatLog.scrollTop = chatLog.scrollHeight;
+        // chatLog.scrollTop = chatLog.scrollHeight;
 
         chatSocket.onerror = function(err) {
             console.log("Websocket encountered an error: " + err.message);

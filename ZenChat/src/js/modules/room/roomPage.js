@@ -2,13 +2,18 @@ import { scrollDown } from "./chat_utils";
 
 export function roomPage() {
     console.log("Sanity check from roomPage().");
-
+    
+    const ws = null;
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
-    const scrollerInner = document.querySelector("#scroller-inner") // NEW
-    const chatFeed = document.querySelector("#chatFeed");
+    const chatFeedInner = document.querySelector("#chatFeed");
     const chatMessageInput = document.querySelector("#chatMessageInput");
     const chatMessageSend = document.querySelector("#chatMessageSend");
     const onlineUsersSelector = document.querySelector("#onlineUsersSelector");
+    // const scrollerInner = document.querySelector("#scroller-inner") // NEW
+    // const chatFeed = document.querySelector("#chatFeed");
+    // const chatMessageInput = document.querySelector("#chatMessageInput");
+    // const chatMessageSend = document.querySelector("#chatMessageSend");
+    // const onlineUsersSelector = document.querySelector("#onlineUsersSelector");
 
     // adds a new option to 'onlineUsersSelector'
     function onlineUsersSelectorAdd(value) {

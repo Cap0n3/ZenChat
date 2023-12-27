@@ -111,7 +111,7 @@ export function roomPage() {
 
         const joinedUserElement = document.createElement("div");
         joinedUserElement.classList.add("chat-joined-user");
-        joinedUserElement.textContent = `--- ${data.user} joined the room ---`;
+        joinedUserElement.textContent = `--- ${data.username} joined the room ---`;
         messageElement.appendChild(joinedUserElement);
 
         scrollerInner.insertAdjacentHTML("beforeend", messageElement.outerHTML);
@@ -125,11 +125,11 @@ export function roomPage() {
 
         const leftUserElement = document.createElement("div");
         leftUserElement.classList.add("chat-joined-user");
-        leftUserElement.textContent = `--- ${data.user} left the room ---`;
+        leftUserElement.textContent = `--- ${data.username} left the room ---`;
         messageElement.appendChild(leftUserElement);
 
         scrollerInner.insertAdjacentHTML("beforeend", messageElement.outerHTML);
-        onlineUsersSelectorRemove(data.user);
+        onlineUsersSelectorRemove(data.username);
         scrollDown(chatFeedInner);
     }
 
@@ -155,14 +155,24 @@ export function roomPage() {
      * @param {Object} data - The message data. 
      * @returns {string} The message element as a string.
      * 
-     * @example
-     * returns "
-     * <li id="msg_1234567890" class="message-container">
-     *      <img class="user-avatar" src="https://www.gravatar.com/avatar/1234567890" alt="avatar" width="50" height="50">
-     *  <h3 class="chat-user">
-     *      <span class="timestamp">12:34</span>
-     *  </h3>
-     * </li>"
+     * * // HTML returned by this function:
+     * // <li id="msg_123" class="message-container">
+     * //   <img src="avatar.jpg" alt="avatar" class="user-avatar" width="50" height="50">
+     * //   <h3 class="chat-user">John Doe <span class="timestamp">2022-01-01 12:00:00</span></h3>
+     * //   <div class="message-content">Hello, world!</div>
+     * //   <div class="toolbar btn-group">
+     * //     <button class="btn btn-outline-dark" type="button" id="editMessage" data-nonce="123">
+     * //       <i class="bi bi-pencil-fill"></i>
+     * //     </button>
+     * //     <button class="btn btn-outline-dark" type="button" id="respondMessage" data-nonce="123">
+     * //       <i class="bi bi-arrow-90deg-left"></i>
+     * //     </button>
+     * //     <button class="btn btn-outline-dark" type="button" id="deleteMessage" data-nonce="123">
+     * //       <i class="bi bi-trash-fill"></i>
+     * //     </button>
+     * //   </div>
+     * // </li>
+     * 
      */
     function createMessageElement(data) {
         // Create message container
@@ -182,6 +192,7 @@ export function roomPage() {
         // Add username title and timestamp
         const userInfoElement = document.createElement("h3");
         userInfoElement.classList.add("chat-user");
+        userInfoElement.textContent = data.username + " ";
         const timestampElement = document.createElement("span");
         timestampElement.classList.add("timestamp");
         timestampElement.textContent = data.timestamp;

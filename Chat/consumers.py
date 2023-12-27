@@ -73,7 +73,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     "type": "user_join",
-                    "user": self.user.username,
+                    "username": self.user.username,
                 },
             )
             self.room.online.add(self.user)
@@ -105,7 +105,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.room_group_name,
                 {
                     "type": "user_leave",
-                    "user": self.user.username,
+                    "username": self.user.username,
                 },
             )
             logger.debug(
@@ -142,7 +142,7 @@ class ChatConsumer(WebsocketConsumer):
                     f"inbox_{target}",
                     {
                         "type": "private_message",
-                        "user": self.user.username,
+                        "username": self.user.username,
                         "avatar": self.avatar.url,
                         "message": target_msg,
                         "timestamp": timestamp,
@@ -181,7 +181,7 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             {
                 "type": "chat_message",
-                "user": self.user.username,
+                "username": self.user.username,
                 "avatar": self.avatar.url,
                 "message": message,
                 "timestamp": timestamp,

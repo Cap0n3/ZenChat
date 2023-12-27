@@ -16,10 +16,21 @@
   padding: 20px 0 20px 0;
 }
 #chatFeed #scroller-inner .message-container {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   align-items: center;
+}
+#chatFeed #scroller-inner .message-container .toolbar {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+}
+#chatFeed #scroller-inner .message-container .toolbar button {
+  font-size: 0.75rem;
 }
 #chatFeed #scroller-inner .message-container .user-avatar {
   width: 50px;
@@ -39,4 +50,7 @@
 #chatFeed #scroller-inner .message-container .timestamp {
   font-size: 0.8rem;
   color: #999;
+}
+#chatFeed #scroller-inner .message-container:hover .toolbar {
+  opacity: 1;
 }

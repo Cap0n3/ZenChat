@@ -17,10 +17,23 @@
         }
 
         .message-container {
+            position: relative;
             display: flex;
             flex-wrap: wrap;
             flex-direction: row;
             align-items: center;
+
+            .toolbar {
+                position: absolute;
+                right: 0;
+                display: flex;
+                align-items: center;
+                opacity: 0;
+
+                button {
+                    font-size: 0.75rem;
+                }
+            }
 
             .user-avatar {
                 width: 50px;
@@ -44,6 +57,12 @@
             .timestamp {
                 font-size: 0.8rem;
                 color: #999;
+            }
+
+            &:hover {
+                .toolbar {
+                    opacity: 1;
+                }
             }
         }
         

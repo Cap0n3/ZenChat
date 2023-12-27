@@ -193,6 +193,36 @@ export function roomPage() {
         messageContentElement.classList.add("message-content");
         messageContentElement.textContent = data.message;
         messageElement.appendChild(messageContentElement);
+
+        // Add toolbar
+        const toolbarElement = document.createElement("div");
+        toolbarElement.classList.add("toolbar", "btn-group");
+
+        const editButton = document.createElement("button");
+        editButton.classList.add("btn", "btn-outline-dark");
+        editButton.type = "button";
+        editButton.id = "editMessage";
+        editButton.setAttribute("data-nonce", data.nonce);
+        editButton.innerHTML = '<i class="bi bi-pencil-fill"></i>';
+        toolbarElement.appendChild(editButton);
+
+        const respondButton = document.createElement("button");
+        respondButton.classList.add("btn", "btn-outline-dark");
+        respondButton.type = "button";
+        respondButton.id = "respondMessage";
+        respondButton.setAttribute("data-nonce", data.nonce);
+        respondButton.innerHTML = '<i class="bi bi-arrow-90deg-left"></i>';
+        toolbarElement.appendChild(respondButton);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("btn", "btn-outline-dark");
+        deleteButton.type = "button";
+        deleteButton.id = "deleteMessage";
+        deleteButton.setAttribute("data-nonce", data.nonce);
+        deleteButton.innerHTML = '<i class="bi bi-trash-fill"></i>';
+        toolbarElement.appendChild(deleteButton);
+
+        messageElement.appendChild(toolbarElement);
     
         return messageElement.outerHTML;
     }

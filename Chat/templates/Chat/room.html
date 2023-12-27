@@ -15,7 +15,7 @@
                 <div id="chatFeed">
                     <ol id="scroller-inner">
                         {% for message in room.messages.all %}
-                            <li>
+                            <li id="msg_{{ message.nonce }}">
                                 <div class="message-container">
                                     <img class="user-avatar" src="{{ message.user.avatar.url }}" alt="avatar" height="50" width="50">
                                     <h3 class="chat-user">{{ message.user.username }} <span class="timestamp">{{ message.formatted_timestamp }}</span></h3>

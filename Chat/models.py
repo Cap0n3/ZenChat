@@ -109,6 +109,7 @@ class Message(models.Model):
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name="messages")
     content = models.CharField(max_length=512)
     timestamp = models.DateTimeField(auto_now_add=True)
+    nonce = models.CharField(max_length=250, blank=True)
 
     def formatted_timestamp(self):
         return self.timestamp.strftime('%d/%m/%Y %H:%M')

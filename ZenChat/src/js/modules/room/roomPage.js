@@ -73,7 +73,7 @@ export function roomPage() {
                     scrollerInner.insertAdjacentHTML(
                         "beforeend",    
                         `
-                        <li>
+                        <li id="msg_${data.nonce}">
                             <div class="message-container">
                                 <img class="user-avatar" src="${data.avatar}" alt="avatar">
                                 <h3 class="chat-user">${data.user} <span class="timestamp">${data.timestamp}</span></h3>

@@ -5,6 +5,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import CustomUser, Room, Message
 from datetime import datetime
+import random
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -117,6 +118,7 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
+        f_timestamp = datetime.now().timestamp() # Float timestamp for message hash (nonce)
 
         if not self.user.is_authenticated:
             logger.warning(
@@ -167,6 +169,13 @@ class ChatConsumer(WebsocketConsumer):
             return
 
         # === Generate Event === #
+
+        # Create unique int identifier for the message (nonce)
+        salt = random.random()
+        message_hash = hash(f"{self.room.id}{f_timestamp}{self.user.id}{message}{salt}")
+        second_hash = hash(f"{self.room.id}{f_timestamp}{self.user.id}{message_hash}{salt}")
+        message_nonce = f"{self.room.id}_{self.user.id}_{abs(message_hash)}_{abs(second_hash)}"
+
         # Send chat message event to the room
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
@@ -176,11 +185,12 @@ class ChatConsumer(WebsocketConsumer):
                 "avatar": self.avatar.url,
                 "message": message,
                 "timestamp": timestamp,
+                "nonce": message_nonce,
             },
         )
 
         # Backup message in model
-        Message.objects.create(user=self.user, room=self.room, content=message)
+        Message.objects.create(user=self.user, room=self.room, content=message, nonce=message_nonce)
 
     # === Message Types ===
     def chat_message(self, event):

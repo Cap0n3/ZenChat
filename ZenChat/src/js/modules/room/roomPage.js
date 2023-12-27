@@ -9,8 +9,6 @@ export function roomPage() {
     const scrollerInner = document.getElementById("scroller-inner");
     const chatMessageInput = document.getElementById("chatMessageInput");
     const onlineUsersSelector = document.getElementById("onlineUsersSelector");
-
-    // focus 'chatMessageInput' when user opens the page
     chatMessageInput.focus();
 
     const form = document.getElementById("chatInputForm");

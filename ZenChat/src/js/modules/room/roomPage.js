@@ -115,7 +115,7 @@ export function roomPage() {
         messageElement.appendChild(joinedUserElement);
 
         scrollerInner.insertAdjacentHTML("beforeend", messageElement.outerHTML);
-        onlineUsersSelectorAdd(data.user);
+        onlineUsersSelectorAdd(data.username);
         scrollDown(chatFeedInner);
     }
 

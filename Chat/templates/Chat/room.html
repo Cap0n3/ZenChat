@@ -10,17 +10,19 @@
                 <div id="chatFeed">
                     <ol id="scroller-inner">
                         {% for message in room.messages.all %}
-                            <li id="msg_{{ message.nonce }}" class="chat_messages">
+                            <li id="{{ message.nonce }}" class="chat_messages" data-user-id="{{ message.user.id }}">
                                 <div class="message-container">
                                     <div class="toolbar btn-group">
-                                        <button class="btn btn-outline-dark" type="button" id="editMessage" data-nonce="{{ message.nonce }}">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </button>
+                                        {% if message.user.id == user.id %}
+                                            <button class="btn btn-outline-dark" type="button" id="editMessage" data-nonce="{{ message.nonce }}">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </button>
+                                            <button class="btn btn-outline-dark" type="button" id="deleteMessage" data-nonce="{{ message.nonce }}">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        {% endif %}
                                         <button class="btn btn-outline-dark" type="button" id="respondMessage" data-nonce="{{ message.nonce }}">
                                             <i class="bi bi-arrow-90deg-left"></i>
-                                        </button>
-                                        <button class="btn btn-outline-dark" type="button" id="deleteMessage" data-nonce="{{ message.nonce }}">
-                                            <i class="bi bi-trash-fill"></i>
                                         </button>
                                     </div>
                                     <img class="user-avatar" src="{{ message.user.avatar.url }}" alt="avatar" height="50" width="50">
@@ -35,11 +37,11 @@
                 <form id="chatInputForm">
                     <div class="input-group mt-4">
                         <input type="text" class="form-control" id="chatMessageInput" placeholder="Enter your chat message" aria-label="Enter your chat message" aria-describedby="chatMessageSend">
-                        <button class="btn btn-outline-success" type="button" id="chatMessageSend">Send</button>
+                        <button class="btn btn-outline-success" type="submit" id="chatMessageSend">Send</button>
                     </div>
                 </form>
             </div>
-            <! -- ONLINE USERS -->
+            <!-- ONLINE USERS -->
             <div class="col-12 col-md-4">
                 <label for="onlineUsers">Online users</label>
                 <select multiple class="form-control" id="onlineUsersSelector">

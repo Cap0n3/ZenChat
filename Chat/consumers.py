@@ -50,12 +50,14 @@ class ChatConsumer(WebsocketConsumer):
             f"User {self.user.username} successfully joined room {self.room_name}"
         )
 
+        # === Generate List Event === #
         # Send the user list to the newly joined user
         self.send(
             json.dumps(
                 {
                     "type": "user_list",
                     "users": [user.username for user in self.room.online.all()],
+                    "current_user_id": self.user.id, # Used to identify the current user in the frontend
                 }
             )
         )
@@ -100,7 +102,6 @@ class ChatConsumer(WebsocketConsumer):
             )
 
             # === Generate Leave Event === #
-            
             # Send leave event to the room
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -171,12 +172,10 @@ class ChatConsumer(WebsocketConsumer):
             return
 
         # === Generate Message Event === #
-
         # Create unique int identifier for the message (nonce)
         salt = random.random()
         message_hash = hash(f"{self.room.id}{f_timestamp}{self.user.id}{message}{salt}")
-        second_hash = hash(f"{self.room.id}{f_timestamp}{self.user.id}{message_hash}{salt}")
-        message_nonce = f"{self.room.id}_{self.user.id}_{abs(message_hash)}_{abs(second_hash)}"
+        message_nonce = f"msg_{self.room.id}_{self.user.id}_{message_hash}"
 
         # Send chat message event to the room
         async_to_sync(self.channel_layer.group_send)(

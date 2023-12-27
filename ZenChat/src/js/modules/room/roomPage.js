@@ -8,7 +8,6 @@ export function roomPage() {
     const chatFeedInner = document.getElementById("chatFeed");
     const scrollerInner = document.getElementById("scroller-inner");
     const chatMessageInput = document.getElementById("chatMessageInput");
-    const chatMessageSend = document.getElementById("chatMessageSend");
     const onlineUsersSelector = document.getElementById("onlineUsersSelector");
 
     // focus 'chatMessageInput' when user opens the page
@@ -34,7 +33,6 @@ export function roomPage() {
         }
 
         // Send message via WebSocket
-        console.log("Sending message: " + message);
         ws.send(JSON.stringify({
             "message": message
         }));
@@ -100,6 +98,9 @@ export function roomPage() {
     }
 
     function handleUserList(data) {
+        // Set storage session with curent user list
+        sessionStorage.setItem("user-id", JSON.stringify(data.current_user_id));
+        
         for (let i = 0; i < data.users.length; i++) {
             onlineUsersSelectorAdd(data.users[i]);
         }
@@ -156,7 +157,7 @@ export function roomPage() {
      * @returns {string} The message element as a string.
      * 
      * * // HTML returned by this function:
-     * // <li id="msg_123" class="message-container">
+     * // <li id="msg_123" class="message-container" data-user-id="23">
      * //   <img src="avatar.jpg" alt="avatar" class="user-avatar" width="50" height="50">
      * //   <h3 class="chat-user">John Doe <span class="timestamp">2022-01-01 12:00:00</span></h3>
      * //   <div class="message-content">Hello, world!</div>
@@ -175,10 +176,14 @@ export function roomPage() {
      * 
      */
     function createMessageElement(data) {
+        // Get current user id from session storage
+        const currentUserId = JSON.parse(sessionStorage.getItem("user-id"));
+
         // Create message container
         const messageElement = document.createElement("li");
-        messageElement.id = "msg_" + data.nonce;
+        messageElement.id = data.nonce;
         messageElement.classList.add("message-container");
+        messageElement.setAttribute("data-user-id", data.user_id);
     
         // Add user avatar
         const avatarElement = document.createElement("img");
@@ -209,14 +214,27 @@ export function roomPage() {
         const toolbarElement = document.createElement("div");
         toolbarElement.classList.add("toolbar", "btn-group");
 
-        const editButton = document.createElement("button");
-        editButton.classList.add("btn", "btn-outline-dark");
-        editButton.type = "button";
-        editButton.id = "editMessage";
-        editButton.setAttribute("data-nonce", data.nonce);
-        editButton.innerHTML = '<i class="bi bi-pencil-fill"></i>';
-        toolbarElement.appendChild(editButton);
+        // if the message is from the current user, add edit and delete buttons
+        if (data.user_id === currentUserId) {
+            console.log("Message from current user.");
+        
+            const editButton = document.createElement("button");
+            editButton.classList.add("btn", "btn-outline-dark");
+            editButton.type = "button";
+            editButton.id = "editMessage";
+            editButton.setAttribute("data-nonce", data.nonce);
+            editButton.innerHTML = '<i class="bi bi-pencil-fill"></i>';
+            toolbarElement.appendChild(editButton);
 
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("btn", "btn-outline-dark");
+            deleteButton.type = "button";
+            deleteButton.id = "deleteMessage";
+            deleteButton.setAttribute("data-nonce", data.nonce);
+            deleteButton.innerHTML = '<i class="bi bi-trash-fill"></i>';
+            toolbarElement.appendChild(deleteButton);
+        }
+        
         const respondButton = document.createElement("button");
         respondButton.classList.add("btn", "btn-outline-dark");
         respondButton.type = "button";
@@ -224,14 +242,6 @@ export function roomPage() {
         respondButton.setAttribute("data-nonce", data.nonce);
         respondButton.innerHTML = '<i class="bi bi-arrow-90deg-left"></i>';
         toolbarElement.appendChild(respondButton);
-
-        const deleteButton = document.createElement("button");
-        deleteButton.classList.add("btn", "btn-outline-dark");
-        deleteButton.type = "button";
-        deleteButton.id = "deleteMessage";
-        deleteButton.setAttribute("data-nonce", data.nonce);
-        deleteButton.innerHTML = '<i class="bi bi-trash-fill"></i>';
-        toolbarElement.appendChild(deleteButton);
 
         messageElement.appendChild(toolbarElement);
     

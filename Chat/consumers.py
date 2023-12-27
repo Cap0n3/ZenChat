@@ -67,7 +67,7 @@ class ChatConsumer(WebsocketConsumer):
                 self.user_inbox, self.channel_name
             )
 
-            # === Generate Event === #
+            # === Generate Join Event === #
             # Send the join event to the room
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -99,7 +99,8 @@ class ChatConsumer(WebsocketConsumer):
                 f"User {self.user.username} successfully deleted inbox {self.user_inbox}"
             )
 
-            # === Generate Event === #
+            # === Generate Leave Event === #
+            
             # Send leave event to the room
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -143,6 +144,7 @@ class ChatConsumer(WebsocketConsumer):
                     {
                         "type": "private_message",
                         "username": self.user.username,
+                        "user_id": self.user.id,
                         "avatar": self.avatar.url,
                         "message": target_msg,
                         "timestamp": timestamp,
@@ -168,7 +170,7 @@ class ChatConsumer(WebsocketConsumer):
             )
             return
 
-        # === Generate Event === #
+        # === Generate Message Event === #
 
         # Create unique int identifier for the message (nonce)
         salt = random.random()
@@ -182,6 +184,7 @@ class ChatConsumer(WebsocketConsumer):
             {
                 "type": "chat_message",
                 "username": self.user.username,
+                "user_id": self.user.id,
                 "avatar": self.avatar.url,
                 "message": message,
                 "timestamp": timestamp,

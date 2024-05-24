@@ -35,6 +35,7 @@ export function roomPage() {
             "message": message
         }));
         
+        // Clear input field
         chatMessageInput.value = "";
     }
 

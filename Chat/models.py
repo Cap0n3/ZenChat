@@ -1,3 +1,30 @@
+"""
+CustomUser and ChatServer:
+
+- A CustomUser can own multiple ChatServer instances (owner field).
+- A ChatServer can have multiple members, linked via the Membership model.
+
+CustomUser and Membership:
+
+- The Membership model links CustomUser to ChatServer with roles.
+
+ChatServer and Room:
+
+- A ChatServer can have multiple Room instances.
+
+CustomUser and Room:
+
+- Users can join and leave rooms, tracked by the online field in Room.
+
+CustomUser and Message:
+
+- A CustomUser can send multiple messages, linked via the user field in Message.
+
+Room and Message:
+
+- A Room can have multiple messages, linked via the room field in Message.
+"""
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from .managers import CustomUserManager

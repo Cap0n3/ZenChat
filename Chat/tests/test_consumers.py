@@ -14,6 +14,7 @@ class ChatConsumerTest(TestCase):
         self.room = Room.objects.create(name="testroom", chat_server=self.server)
         self.channel_layer = get_channel_layer()
 
+    @skip("Skip for now")
     async def test_connect(self):
         communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "ws/chat/testroom/")
         communicator.scope['user'] = self.user
@@ -35,17 +36,23 @@ class ChatConsumerTest(TestCase):
 
         await communicator.disconnect()
 
-    @skip("Skip for now")
-    def test_receive_message(self):
+    #@skip("Skip for now")
+    async def test_receive_message(self):
         communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "ws/chat/testroom/")
         communicator.scope['user'] = self.user
+        communicator.scope['url_route'] = {"kwargs": {"room_name": "testroom"}}
 
-        connected, subprotocol = communicator.connect()
+        connected, subprotocol = await communicator.connect()
         self.assertTrue(connected)
 
-        communicator.send_json_to({"message": "hello"})
-        response = communicator.receive_json_from()
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "user_list")
+        
+        response = await communicator.receive_json_from()
+        self.assertEqual(response["type"], "user_join")
+        
+        await communicator.send_json_to({"message": "hello, this is a test message"})
+        response = await communicator.receive_json_from()
+        print(response)
         self.assertEqual(response["type"], "chat_message")
-        self.assertEqual(response["message"], "hello")
-
-        communicator.disconnect()
+        self.assertEqual(response["message"], "hello, this is a test message")

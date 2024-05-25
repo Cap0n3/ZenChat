@@ -6,7 +6,7 @@ from channels.generic.websocket import WebsocketConsumer
 from .models import CustomUser, Room, Message
 from datetime import datetime
 import random
-
+from consumer_managers.connection_manager import ChatConnectionManager
 
 class ChatConsumer(WebsocketConsumer):
     def __init__(self, *args, **kwargs):
@@ -16,69 +16,22 @@ class ChatConsumer(WebsocketConsumer):
         self.room = None
         self.user = None
         self.avatar = None
-        self.user_inbox = None  # For private messaging ()
+        self.user_inbox = None  # For private messaging
+        self.connection_manager = ChatConnectionManager(self)
 
         logger.debug("[***] ChatConsumer created [***]")
 
     def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
-        self.room_group_name = f"chat_{self.room_name}"
-        self.room = Room.objects.get(name=self.room_name)
-        self.user = self.scope["user"]
-        self.avatar = CustomUser.objects.get(username=self.user.username).avatar
-        self.user_inbox = f"inbox_{self.user.username}"
-
-        logger.debug(f"Received scope: {self.scope}")
-
-        # Connextion has to be accepted
-        self.accept()
-
-        # Log the connection
-        if not self.user.is_authenticated:
-            logger.warning(f"Unauthenticated user tried to join room {self.room_name}")
-        else:
-            logger.info(
-                f"User {self.user.username} successfully connected to room {self.room_name}"
-            )
-
-        # Join or create the room
-        async_to_sync(self.channel_layer.group_add)(
-            self.room_group_name, self.channel_name
-        )
-
-        logger.info(
-            f"User {self.user.username} successfully joined room {self.room_name}"
-        )
-
-        # === Generate List Event === #
-        # Send the user list to the newly joined user
-        self.send(
-            json.dumps(
-                {
-                    "type": "user_list",
-                    "users": [user.username for user in self.room.online.all()],
-                    "current_user_id": self.user.id, # Used to identify the current user in the frontend
-                }
-            )
-        )
-
-        if self.user.is_authenticated:
-            # === Private Messaging === #
-            # Create a user inbox for private messaging
-            async_to_sync(self.channel_layer.group_add)(
-                self.user_inbox, self.channel_name
-            )
-
-            # === Generate Join Event === #
-            # Send the join event to the room
-            async_to_sync(self.channel_layer.group_send)(
-                self.room_group_name,
-                {
-                    "type": "user_join",
-                    "username": self.user.username,
-                },
-            )
-            self.room.online.add(self.user)
+        try:
+            self.connection_manager.initialize_room_and_user()
+            self.connection_manager.accept_connection()
+            self.connection_manager.join_room_group()
+            self.connection_manager.send_user_list()
+            self.connection_manager.setup_private_messaging()
+            self.connection_manager.notify_room_join()
+        except Exception as e:
+            logger.error(f"Error during connection: {e}")
+            self.close()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(

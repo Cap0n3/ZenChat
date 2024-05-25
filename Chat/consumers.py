@@ -16,7 +16,7 @@ class ChatConsumer(WebsocketConsumer):
         self.room = None
         self.user = None
         self.avatar = None
-        self.user_inbox = None  # For private messaging
+        self.user_inbox = None  # For private messaging ()
 
         logger.debug("[***] ChatConsumer created [***]")
 

@@ -31,7 +31,7 @@ class ChatConsumer(WebsocketConsumer):
             logger.error(f"Error during connection: {e}")
             self.close()
 
-    def disconnect(self):
+    def disconnect(self, close_code):
         try:
             self.connection_manager.leave_room_group()
             self.connection_manager.delete_private_inbox()

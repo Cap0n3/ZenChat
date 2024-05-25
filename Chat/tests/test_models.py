@@ -5,7 +5,7 @@ from Chat.models import ChatServer, Membership, Room, Message
 
 CustomUser = get_user_model()
 
-@skip("Skip for now")
+#@skip("Skip for now")
 class CustomUserModelTest(TestCase):
     """ Test the CustomUser model, if users can be created and authenticated. """
     def test_user_creation(self):
@@ -15,7 +15,7 @@ class CustomUserModelTest(TestCase):
         self.assertTrue(user.check_password("password"))
         self.assertTrue(user.is_authenticated)
 
-@skip("Skip for now")
+#@skip("Skip for now")
 class ChatServerModelTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username="testuser", email="test@example.com", password="password")
@@ -26,7 +26,7 @@ class ChatServerModelTest(TestCase):
         self.assertEqual(self.chat_server.description, "A test server")
         self.assertEqual(self.chat_server.owner, self.user)
 
-@skip("Skip for now")
+#@skip("Skip for now")
 class MembershipModelTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username="testuser", email="test@example.com", password="password")
@@ -44,7 +44,7 @@ class MembershipModelTest(TestCase):
         self.assertEqual(self.membership2.role, "member")
         self.assertEqual(self.membership3.role, "moderator")
 
-@skip("Skip for now")
+#@skip("Skip for now")
 class RoomModelTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username="testuser", email="test@example.com", password="password")

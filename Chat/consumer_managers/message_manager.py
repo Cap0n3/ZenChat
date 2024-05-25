@@ -1,11 +1,10 @@
-# chat/managers/message_manager.py
-
 from asgiref.sync import async_to_sync
 import json
 import logging
 from datetime import datetime
 import random
-from Chat.models import Message, CustomUser, Room
+from Chat.models import Message
+import hashlib
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +81,10 @@ class ChatMessageManager:
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
         f_timestamp = datetime.now().timestamp()
         salt = random.random()
-        message_hash = hash(f"{self.consumer.room.id}{f_timestamp}{self.consumer.user.id}{message}{salt}")
+        
+        # Create a unique nonce for the message
+        hash_input = f"{self.consumer.room.id}{f_timestamp}{self.consumer.user.id}{message}{salt}".encode('utf-8')
+        message_hash = hashlib.sha256(hash_input).hexdigest() # SHA-256 hash
         message_nonce = f"msg_{self.consumer.room.id}_{self.consumer.user.id}_{message_hash}"
         
         reply_to_message = None

@@ -22,3 +22,9 @@ test_consumers:
 test_models:
 	@echo "Running the tests for the models..."
 	@python manage.py test Chat.tests.test_models
+
+.PHONY: migrate_all
+migrate_all:
+	@echo "Migrating the database..."
+	@python manage.py makemigrations
+	@python manage.py migrate

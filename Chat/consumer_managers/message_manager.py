@@ -28,6 +28,7 @@ class ChatMessageManager:
         """
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
+        reply_to_nonce = text_data_json.get("reply_to", None)
 
         if not self.consumer.user.is_authenticated:
             logger.warning(
@@ -38,7 +39,7 @@ class ChatMessageManager:
         if message.startswith("/pm"):
             self.handle_private_message(message)
         else:
-            self.handle_chat_message(message)
+            self.handle_chat_message(message, reply_to_nonce)
 
     def handle_private_message(self, message):
         """ Extract the target and message from the private message and send it to the target user. (Not fully implemented) """
@@ -76,13 +77,17 @@ class ChatMessageManager:
             )
         )
 
-    def handle_chat_message(self, message):
+    def handle_chat_message(self, message, reply_to_nonce):
         """ Send the chat message to the room group and save it to the database. """
         timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
         f_timestamp = datetime.now().timestamp()
         salt = random.random()
         message_hash = hash(f"{self.consumer.room.id}{f_timestamp}{self.consumer.user.id}{message}{salt}")
         message_nonce = f"msg_{self.consumer.room.id}_{self.consumer.user.id}_{message_hash}"
+        
+        reply_to_message = None
+        if reply_to_nonce:
+            reply_to_message = Message.objects.get(nonce=reply_to_nonce)
 
         async_to_sync(self.consumer.channel_layer.group_send)(
             self.consumer.room_group_name,
@@ -94,8 +99,11 @@ class ChatMessageManager:
                 "message": message,
                 "timestamp": timestamp,
                 "nonce": message_nonce,
+                "reply_to_username": reply_to_message.user.username if reply_to_message else "",
+                "reply_to_message": reply_to_message.content if reply_to_message else "",
+                "reply_to_nonce": reply_to_message.nonce if reply_to_message else "",
             },
         )
 
         # Save the message to the database
-        Message.objects.create(user=self.consumer.user, room=self.consumer.room, content=message, nonce=message_nonce)
+        Message.objects.create(user=self.consumer.user, room=self.consumer.room, content=message, nonce=message_nonce, reply_to=reply_to_message)

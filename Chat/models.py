@@ -137,6 +137,8 @@ class Message(models.Model):
     content = models.CharField(max_length=512)
     timestamp = models.DateTimeField(auto_now_add=True)
     nonce = models.CharField(max_length=250, blank=True)
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+
 
     def formatted_timestamp(self):
         return self.timestamp.strftime('%d/%m/%Y %H:%M')

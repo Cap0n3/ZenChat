@@ -28,13 +28,19 @@ class ChatServerModelTest(TestCase):
 class MembershipModelTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(username="testuser", email="test@example.com", password="password")
+        self.user2 = CustomUser.objects.create_user(username="testuser2", email="test2@example.com", password="password")
+        self.user3 = CustomUser.objects.create_user(username="testuser3", email="test3@example.com", password="password")
         self.chat_server = ChatServer.objects.create(name="Test Server", description="A test server", owner=self.user)
         self.membership = Membership.objects.create(user=self.user, server=self.chat_server, role="admin")
+        self.membership2 = Membership.objects.create(user=self.user2, server=self.chat_server, role="member")
+        self.membership3 = Membership.objects.create(user=self.user3, server=self.chat_server, role="moderator")
 
     def test_membership_creation(self):
         self.assertEqual(self.membership.user, self.user)
         self.assertEqual(self.membership.server, self.chat_server)
         self.assertEqual(self.membership.role, "admin")
+        self.assertEqual(self.membership2.role, "member")
+        self.assertEqual(self.membership3.role, "moderator")
 
 class RoomModelTest(TestCase):
     def setUp(self):

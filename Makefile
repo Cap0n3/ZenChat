@@ -13,7 +13,12 @@ run:
 	@echo "Running the program..."
 	@python3 manage.py runserver
 
-.PHONY: test
-test:
-	@echo "Running the tests..."
+.PHONY: test_consumers
+test_consumers:
+	@echo "Running the tests for the consumers..."
 	@python manage.py test Chat.tests.test_consumers
+
+.PHONY: test_models
+test_models:
+	@echo "Running the tests for the models..."
+	@python manage.py test Chat.tests.test_models

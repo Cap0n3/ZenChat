@@ -87,7 +87,11 @@ class ChatMessageManager:
         
         reply_to_message = None
         if reply_to_nonce:
-            reply_to_message = Message.objects.get(nonce=reply_to_nonce)
+            try:
+                reply_to_message = Message.objects.get(nonce=reply_to_nonce)
+            except Message.DoesNotExist:
+                logger.error(f"Reply message with nonce {reply_to_nonce} not found.")
+                reply_to_nonce = None
 
         async_to_sync(self.consumer.channel_layer.group_send)(
             self.consumer.room_group_name,

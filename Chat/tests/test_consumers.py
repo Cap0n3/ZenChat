@@ -15,7 +15,7 @@ class ChatConsumerTest(TestCase):
         self.message = Message.objects.create(user=self.user, room=self.room, content="hello, I'm an alien from outerspace !", nonce="msg_1_1_123456")
         self.channel_layer = get_channel_layer()
 
-    @skip("Skip for now")
+    #@skip("Skip for now")
     async def test_connect(self):
         communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "ws/chat/testroom/")
         communicator.scope['user'] = self.user
@@ -68,7 +68,7 @@ class ChatConsumerTest(TestCase):
         
         await communicator.disconnect()
         
-    @skip("Skip for now")
+    #@skip("Skip for now")
     async def test_reply_message(self):
         communicator = WebsocketCommunicator(ChatConsumer.as_asgi(), "ws/chat/testroom/")
         communicator.scope['user'] = self.user

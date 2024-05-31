@@ -34,9 +34,11 @@
                     </ol>
                 </div>
                 <!-- CHAT INPUT -->
-                <form id="chatInputForm">
-                    <div class="input-group mt-4">
+                <form id="chatInputForm" class="mt-4">
+                    <input id="reply-input" class="form-control d-none" type="text" value="Disabled readonly input" aria-label="Disabled input example" disabled readonly>
+                    <div class="input-group mt-2">
                         <input type="text" class="form-control" id="chatMessageInput" placeholder="Enter your chat message" aria-label="Enter your chat message" aria-describedby="chatMessageSend">
+                        <input type="hidden" id="reply-nonce" value="">
                         <button class="btn btn-outline-success" type="submit" id="chatMessageSend">Send</button>
                     </div>
                 </form>

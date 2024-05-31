@@ -106,7 +106,7 @@ export function createSystemMessageElement(message) {
     messageElement.classList.add("message-container");
 
     const systemMessageElement = document.createElement("div");
-    systemMessageElement.classList.add("chat-system-message");
+    systemMessageElement.classList.add("chat-system-message", "text-success");
     systemMessageElement.textContent = `--- ${message} ---`;
 
     messageElement.appendChild(systemMessageElement);

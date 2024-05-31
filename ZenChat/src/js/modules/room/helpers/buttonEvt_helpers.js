@@ -62,5 +62,12 @@ export function handleRespond(event) {
     const author = event.currentTarget.dataset.author;
     const message = event.currentTarget.dataset.messageContent;
     const nonce = event.currentTarget.dataset.nonce;
+    const replyInput = document.getElementById("reply-input");
+    const hiddenReplyNonce = document.getElementById("reply-nonce");
+    replyInput.classList.replace("d-none", "d-block");
+    // scroll to replyInput
+    replyInput.scrollIntoView({behavior: "smooth"});
+    replyInput.value = `↩️ Reply to ${author}: ${message}`;
+    hiddenReplyNonce.value = nonce;
     console.log(`Respond to message from ${author}: ${message} with nonce: ${nonce}`);
 }

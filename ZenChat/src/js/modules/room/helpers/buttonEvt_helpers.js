@@ -1,4 +1,8 @@
 export function addEventListenersToButtons(element) {
+    // Get message author
+    const messageAuthor = element.querySelector(".chat-user").firstChild;
+    // Get message content
+    const messageContent = element.querySelector(".message-content");
     // Get all buttons inside element
     const buttons = element.querySelectorAll("button");
 
@@ -17,7 +21,9 @@ export function addEventListenersToButtons(element) {
             console.error("Button class not found, check your code.");
         }
 
-        // Store the nonce in the button's dataset for later use
+        // Store important data in button dataset for action handling
+        button.dataset.author = messageAuthor.textContent;
+        button.dataset.messageContent = messageContent.textContent;
         button.dataset.nonce = nonce;
     });
 }
@@ -53,6 +59,8 @@ export function handleDelete(event) {
 }
 
 export function handleRespond(event) {
+    const author = event.currentTarget.dataset.author;
+    const message = event.currentTarget.dataset.messageContent;
     const nonce = event.currentTarget.dataset.nonce;
-    console.log("Respond message with nonce: " + nonce);
+    console.log(`Respond to message from ${author}: ${message} with nonce: ${nonce}`);
 }

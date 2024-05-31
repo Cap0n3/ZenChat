@@ -1,6 +1,6 @@
 import { serverPage } from "./modules/home/serverPage";
 import { roomPage } from "./modules/room/roomPage";
-import { scrollDown } from "./modules/room/chat_utils";
+import { scrollDown } from "./modules/common/chat_utils";
 
 function initialize() {
     console.log("Sanity check from main.js.");

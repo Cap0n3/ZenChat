@@ -1,3 +1,5 @@
+
+# Virtual environment
 .PHONY: activate
 activate:
 	@echo "Activating the virtual environment with pyenv virtualenv..."
@@ -8,11 +10,18 @@ deactivate:
 	@echo "Deactivating the virtual environment by switching to system Python..."
 	@pyenv local system
 
+# Run commands
 .PHONY: run
 run:
 	@echo "Running the program..."
 	@python3 manage.py runserver
 
+.PHONY: run-webpack
+run-webpack:
+	@echo "Lauching webpack..."
+	@npm run build
+
+# Test commands
 .PHONY: test_consumers
 test_consumers:
 	@echo "Running the tests for the consumers..."

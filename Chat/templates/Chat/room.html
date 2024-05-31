@@ -14,14 +14,14 @@
                                 <div class="message-container">
                                     <div class="toolbar btn-group">
                                         {% if message.user.id == user.id %}
-                                            <button class="btn btn-outline-dark" type="button" id="editMessage" data-nonce="{{ message.nonce }}">
+                                            <button class="btn btn-outline-dark editMessage" type="button" id="editMessage-{{ message.nonce }}" data-nonce="{{ message.nonce }}">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </button>
-                                            <button class="btn btn-outline-dark" type="button" id="deleteMessage" data-nonce="{{ message.nonce }}">
+                                            <button class="btn btn-outline-dark deleteMessage" type="button" id="deleteMessage-{{ message.nonce }}" data-nonce="{{ message.nonce }}">
                                                 <i class="bi bi-trash-fill"></i>
                                             </button>
                                         {% endif %}
-                                        <button class="btn btn-outline-dark" type="button" id="respondMessage" data-nonce="{{ message.nonce }}">
+                                        <button class="btn btn-outline-dark respondMessage" type="button" id="respondMessage-{{ message.nonce }}" data-nonce="{{ message.nonce }}">
                                             <i class="bi bi-arrow-90deg-left"></i>
                                         </button>
                                     </div>

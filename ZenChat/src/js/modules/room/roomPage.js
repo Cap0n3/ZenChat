@@ -1,15 +1,24 @@
-import { scrollDown } from "./utils/chat_utils";
-import { handleFormSubmit } from "./utils/form_handler";
-import { connectWebSocket } from "./websocket";
+import { scrollDown } from "../common/chat_utils";
+import { handleFormSubmit } from "./helpers/form_handler";
+import { connectWebSocket } from "../common/websocket";
 import { 
     createMessageElement, 
     createSystemMessageElement,
     onlineUsersSelectorAdd,
-    onlineUsersSelectorRemove
+    onlineUsersSelectorRemove,
 } from "./helpers/dom_helpers";
+import { 
+    addEventListenersToButtons, 
+    removeEventListenersFromButtons 
+} from "./helpers/buttonEvt_helpers";
+
 
 export function roomPage() {
     console.log("Sanity check from roomPage().");
+
+    // ======================//
+    // === Initialization ===//
+    // ======================//
 
     // Get DOM elements
     const roomName = JSON.parse(document.getElementById('roomName').textContent);
@@ -19,10 +28,12 @@ export function roomPage() {
     const onlineUsersSelector = document.getElementById("onlineUsersSelector");
     chatMessageInput.focus();
 
-    // Chat form handling
-    const form = document.getElementById("chatInputForm");
-    handleFormSubmit(form, chatMessageInput, ws);
-
+    // Remove old event listeners and add new ones
+    const chatMessages = document.querySelectorAll(".message-container");
+    chatMessages.forEach(message => {
+        removeEventListenersFromButtons(message);
+        addEventListenersToButtons(message);
+    });
 
     //===============================//
     //=== Websocket communication ===//
@@ -68,6 +79,13 @@ export function roomPage() {
         }
     }
 
+    // ================================ //
+    // === Form submission handler === //
+    // ================================ //
+
+    const form = document.getElementById("chatInputForm");
+    handleFormSubmit(form, chatMessageInput, ws);
+
     //==================================//
     //=== Websocket message handlers ===//
     //==================================//
@@ -80,7 +98,9 @@ export function roomPage() {
 
     function handleChatMessage(data) {
         const messageElement = createMessageElement(data, JSON.parse(sessionStorage.getItem("user-id")));
-        scrollerInner.insertAdjacentHTML("beforeend", messageElement);
+        scrollerInner.insertAdjacentElement("beforeend", messageElement);
+        const insertedElement = document.getElementById(messageElement.id);
+        addEventListenersToButtons(insertedElement);
         scrollDown(chatFeedInner);
     }
 

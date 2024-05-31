@@ -23,14 +23,14 @@
  * </li>
  * 
  */
-export function createMessageElement(data, currentUserId) {
+export function createMessageElement(data, currentUserId) { 
 
     // Create toolbar buttons function (DRY)
-    function createToolbarButton(id, iconClass, nonce) {
+    function createToolbarButton(id, iconClass, nonce, callbackFunc=null) {
         const button = document.createElement("button");
-        button.classList.add("btn", "btn-outline-dark");
+        button.classList.add("btn", "btn-outline-dark", `${id}`);
         button.type = "button";
-        button.id = id;
+        button.id = `${id}-${nonce}`;
         button.setAttribute("data-nonce", nonce);
         button.innerHTML = `<i class="${iconClass}"></i>`;
         return button;
@@ -73,8 +73,16 @@ export function createMessageElement(data, currentUserId) {
 
     // if the message is from the current user, add edit and delete buttons
     if (data.user_id === currentUserId) {
-        const editButton = createToolbarButton("editMessage", "bi bi-pencil-fill", data.nonce);
-        const deleteButton = createToolbarButton("deleteMessage", "bi bi-trash-fill", data.nonce);
+        const editButton = createToolbarButton(
+            "editMessage", 
+            "bi bi-pencil-fill", 
+            data.nonce    
+        );
+        const deleteButton = createToolbarButton(
+            "deleteMessage", 
+            "bi bi-trash-fill", 
+            data.nonce
+        );
         toolbarElement.appendChild(editButton);
         toolbarElement.appendChild(deleteButton);
     }
@@ -83,9 +91,16 @@ export function createMessageElement(data, currentUserId) {
     toolbarElement.appendChild(respondButton);
 
     messageElement.appendChild(toolbarElement);
-    return messageElement.outerHTML;
+    
+    return messageElement;
 }
 
+/**
+ * Chat system message to all users of a room (in chat feed)
+ * 
+ * @param {*} message - The message.
+ * @returns 
+ */
 export function createSystemMessageElement(message) {
     const messageElement = document.createElement("li");
     messageElement.classList.add("message-container");
@@ -108,6 +123,7 @@ export function onlineUsersSelectorAdd(selector, value) {
     }
 }
 
+// Removes an option from 'onlineUsersSelector'
 export function onlineUsersSelectorRemove(selector, value) {
     const oldOption = document.querySelector(`option[value='${value}']`);
     if (oldOption) oldOption.remove();
